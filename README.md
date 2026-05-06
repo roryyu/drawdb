@@ -32,7 +32,60 @@
 
 <h3 align="center"><img width="700" style="border-radius:5px;" alt="drawDB screenshot demo" src="drawdb.png"></h3>
 
-DrawDB is a robust and user-friendly database entity relationship diagram (ERD) editor right in your browser. Build diagrams with a few clicks, export and import SQL scripts, generate migrations, customize your editor, and more without creating an account. See the full set of features on [here](https://drawdb.app/).
+DrawDB is a robust and user-friendly database entity relationship diagram (ERD) editor right in your browser. Build diagrams with a few clicks, export and import SQL scripts, generate migrations, customize your editor, and more without creating an account. See the full set of features [here](https://drawdb.app/).
+
+> **Note:** This is a fork of [drawdb-io/drawdb](https://github.com/drawdb-io/drawdb) with additional features.
+
+## What's New: PostgreSQL Direct Connection
+
+This fork adds the ability to **connect directly to a PostgreSQL database** and reverse-engineer its schema into an ER diagram — no need to manually export DDL and import it.
+
+### How It Works
+
+1. A lightweight **Express backend** (`server/`) connects to your PostgreSQL database using temporary credentials (never stored).
+2. The backend introspects `information_schema` and `pg_catalog` to generate DDL, covering:
+   - Enum & composite types
+   - Tables with columns, defaults, NOT NULL, identity
+   - Primary keys, unique constraints, foreign keys (with ON UPDATE/DELETE)
+   - Indexes (excluding PK/UK)
+   - Table & column comments
+3. The frontend receives the DDL, parses it with `node-sql-parser`, and feeds the AST into the existing `fromPostgres()` import pipeline — the same path used by "Import from SQL".
+
+### Setup
+
+```bash
+# 1. Start the backend
+cd server
+cp .env.example .env   # edit PORT and ALLOWED_ORIGINS if needed
+npm install
+npm start
+
+# 2. Start the frontend
+cd ..
+VITE_BACKEND_URL=http://localhost:3001 npm run dev
+```
+
+### Usage
+
+1. Open drawDB in your browser
+2. **File → Import from SQL → Connect to Database**
+3. Fill in host, port, database, user, password, schema (default: `public`), and SSL toggle
+4. Click **Import** — the ER diagram is generated automatically
+
+### Docker Compose
+
+```bash
+docker compose up
+# Frontend: http://localhost:5173
+# Backend:  http://localhost:3001
+```
+
+### Security
+
+- Database credentials are used only for the duration of the schema query and then released
+- The backend does not log passwords
+- SSL is supported for cloud databases (Supabase, RDS, etc.)
+- CORS is restricted to `ALLOWED_ORIGINS` from the backend `.env`
 
 ## Getting Started
 
