@@ -68,9 +68,10 @@ VITE_BACKEND_URL=http://localhost:3001 npm run dev
 ### Usage
 
 1. Open drawDB in your browser
-2. **File → Import from SQL → Connect to Database**
-3. Fill in host, port, database, user, password, schema (default: `public`), and SSL toggle
-4. Click **Import** — the ER diagram is generated automatically
+2. **Create a new diagram and select "Generic" as the database type** — the "Connect to Database" option only appears under Generic diagrams
+3. Go to **File → Import from SQL → Connect to Database**
+4. Fill in host, port, database, user, password, schema (default: `public`), and SSL toggle
+5. Click **Import** — the ER diagram is generated automatically
 
 ### Docker Compose
 
